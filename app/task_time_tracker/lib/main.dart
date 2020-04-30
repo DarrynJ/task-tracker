@@ -17,134 +17,72 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  int _currentIndex = 0;
+  List<String> _tempList =
+      new List<String>.generate(30, (index) => "Task ${index}");
 
-  final navigationBarTabs = [
-    HomeWidget(),
-    WeekWidget(),
-    TasksWidget(),
-    SettingsWidget()
-  ];
+  Widget _taskCard(String text) {
+    return Container(
+      height: 100,
+      margin: EdgeInsets.only(
+        top: 20,
+        left: 10,
+        right: 10,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey,
+        shape: BoxShape.rectangle,
+      ),
+      child: Center(
+        child: Text(
+          text,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: navigationBarTabs[this._currentIndex],
-      bottomNavigationBar: BottomNavigationWidget(),
-    );
-  }
-}
-
-class HomeWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("Home page selected"),
-    );
-  }
-}
-
-class WeekWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("Week page selected"),
-    );
-  }
-}
-
-class TasksWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("Tasks page selected"),
-    );
-  }
-}
-
-class SettingsWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("Settings page selected"),
-    );
-  }
-}
-
-class BottomNavigationWidget extends StatefulWidget {
-  @override
-  _BottomNavigationWidgetState createState() => _BottomNavigationWidgetState();
-}
-
-class _BottomNavigationWidgetState extends State<BottomNavigationWidget> {
-  int _currentIndex = 0;
-
-  final navigationBarTabs = [
-    HomeWidget(),
-    WeekWidget(),
-    TasksWidget(),
-    SettingsWidget()
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: navigationBarTabs[this._currentIndex],
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topRight: Radius.circular(30),
-            topLeft: Radius.circular(30),
-            bottomLeft: Radius.circular(30.0),
-            bottomRight: Radius.circular(30.0),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              spreadRadius: 0,
-              blurRadius: 25,
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+              expandedHeight: 250.0,
+              floating: false,
+              pinned: true,
+              snap: false,
+              flexibleSpace: const FlexibleSpaceBar(
+                title: Text('Time tracked'),
+              ),
+              actionsIconTheme: IconThemeData(
+                size: double.infinity,
+              ),
+              actions: <Widget>[
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.search),
+                      tooltip: 'Search',
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.person_outline),
+                      tooltip: 'Profile',
+                      onPressed: () {},
+                    ),
+                  ],
+                )
+              ]),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              _tempList.map((item) {
+                return _taskCard(item);
+              }).toList(),
             ),
-          ],
-        ),
-        padding: const EdgeInsets.all(10),
-        child: ClipRRect(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
-            bottomLeft: Radius.circular(30.0),
-            bottomRight: Radius.circular(30.0),
-          ),
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                title: Text("Home"),
-                backgroundColor: Colors.blueAccent,
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today),
-                title: Text("Week"),
-                backgroundColor: Colors.redAccent,
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.check_circle_outline),
-                title: Text("Tasks"),
-                backgroundColor: Colors.greenAccent,
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                title: Text("Settings"),
-                backgroundColor: Colors.grey,
-              ),
-            ],
-            onTap: (index) {
-              setState(() {
-                this._currentIndex = index;
-              });
-            },
-          ),
-        ),
+          )
+        ],
       ),
     );
   }
