@@ -18,20 +18,20 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   List<String> _tempList =
-      new List<String>.generate(30, (index) => "Task ${index}");
+      new List<String>.generate(30, (index) => "Task ${(index + 1)}");
 
   Widget _taskCard(String text) {
     return Container(
       height: 100,
-      margin: EdgeInsets.only(
-        top: 20,
-        left: 10,
-        right: 10,
-      ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.grey,
+        color: Colors.white10,
         shape: BoxShape.rectangle,
+        border: Border(
+          bottom: BorderSide(
+            width: 1,
+            color: Colors.grey,
+          ),
+        ),
       ),
       child: Center(
         child: Text(
@@ -52,10 +52,7 @@ class HomeState extends State<Home> {
               pinned: true,
               snap: false,
               flexibleSpace: const FlexibleSpaceBar(
-                title: Text('Time tracked'),
-              ),
-              actionsIconTheme: IconThemeData(
-                size: double.infinity,
+                title: Text('TODO: Add text here'),
               ),
               actions: <Widget>[
                 Row(
@@ -76,10 +73,47 @@ class HomeState extends State<Home> {
                 )
               ]),
           SliverList(
-            delegate: SliverChildListDelegate(
-              _tempList.map((item) {
-                return _taskCard(item);
-              }).toList(),
+            delegate: new SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return new Dismissible(
+                  // dismissThresholds: Map(),
+                  key: new ObjectKey(
+                    _tempList[index],
+                  ),
+                  child: _taskCard(_tempList[index]),
+                  onDismissed: (DismissDirection direction) {
+                    setState(() {
+                      this._tempList.removeAt(index);
+                    });
+                    direction == DismissDirection.endToStart
+                        ? print("stop")
+                        : print("start");
+                  },
+                  background: new Container(
+                    height: 100,
+                    color: Color.fromRGBO(0, 96, 100, 0.8),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                        size: 100,
+                      ),
+                    ),
+                  ),
+                  secondaryBackground: new Container(
+                    height: 100,
+                    color: Color.fromRGBO(183, 28, 28, 0.8),
+                    child: ListTile(
+                      trailing: Icon(
+                        Icons.stop,
+                        color: Colors.white,
+                        size: 100,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              childCount: _tempList.length,
             ),
           )
         ],
