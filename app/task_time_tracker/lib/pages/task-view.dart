@@ -17,6 +17,23 @@ class _TaskViewState extends State<TaskView> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(this.task.name),
+        actions: <Widget>[
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.person_outline),
+                tooltip: 'Profile',
+                onPressed: () {},
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }

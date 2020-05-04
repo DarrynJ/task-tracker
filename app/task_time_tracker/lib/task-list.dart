@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './models/task.dart';
+import './pages/task-view.dart';
 
 class TaskList extends StatefulWidget {
   @override
@@ -29,12 +30,11 @@ class TaskListState extends State<TaskList> {
   }
 
   Widget _actionContainer(Task task) {
-    return GestureDetector(
+    return InkWell(
       child: Container(
         width: 100,
         height: 100,
         decoration: BoxDecoration(
-          // TODO: Add a radius
           border: Border(
             bottom: BorderSide(
               color: Colors.grey,
@@ -59,8 +59,9 @@ class TaskListState extends State<TaskList> {
   }
 
   Widget _descriptionContainer(Task task) {
-    return GestureDetector(
+    return InkWell(
       child: Container(
+        padding: EdgeInsets.only(left: 10),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
@@ -107,7 +108,14 @@ class TaskListState extends State<TaskList> {
           ],
         ),
       ),
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TaskView(task),
+            ));
+      },
+      onLongPress: () {},
     );
   }
 
@@ -142,16 +150,23 @@ class TaskListState extends State<TaskList> {
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
-                child: Text("No"),
+                child: Text(
+                  "No",
+                  style: TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
               ),
-              FlatButton(
+              RaisedButton(
+                  color: Color.fromRGBO(183, 28, 28, 0.8),
+                  textColor: Colors.white,
                   onPressed: () {
                     Navigator.of(context).pop(true);
                   },
                   child: Text(
                     "Yes",
                     style: TextStyle(
-                      color: Colors.redAccent,
+                      color: Colors.white,
                     ),
                   ))
             ],
@@ -189,45 +204,47 @@ class TaskListState extends State<TaskList> {
                 ],
               )
             ]),
-        SliverList(
-          delegate: new SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              return new Dismissible(
-                direction: DismissDirection.endToStart,
-                key: new ObjectKey(
-                  _taskList[index],
-                ),
-                child: _taskCard(_taskList[index]),
-                confirmDismiss: (DismissDirection direction) {
-                  return _showDeleteConfirmation(context).then((delete) {
-                    if (delete) {
-                      _taskList.removeAt(index);
+        Container(
+          child: SliverList(
+            delegate: new SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return new Dismissible(
+                  direction: DismissDirection.endToStart,
+                  key: new ObjectKey(
+                    _taskList[index],
+                  ),
+                  child: _taskCard(_taskList[index]),
+                  confirmDismiss: (DismissDirection direction) {
+                    return _showDeleteConfirmation(context).then((delete) {
+                      if (delete) {
+                        _taskList.removeAt(index);
 
-                      SnackBar deleteSnackBar = SnackBar(
-                        content: Text("Task successfully removed."),
-                      );
-                      Scaffold.of(context).showSnackBar(deleteSnackBar);
-                    }
-                    return delete;
-                  });
-                },
-                background: new Container(),
-                secondaryBackground: new Container(
-                  height: 100,
-                  color: Color.fromRGBO(183, 28, 28, 0.8),
-                  child: Center(
-                    child: ListTile(
-                      trailing: Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                        size: 50,
+                        SnackBar deleteSnackBar = SnackBar(
+                          content: Text("Task successfully removed."),
+                        );
+                        Scaffold.of(context).showSnackBar(deleteSnackBar);
+                      }
+                      return delete;
+                    });
+                  },
+                  background: new Container(),
+                  secondaryBackground: new Container(
+                    height: 100,
+                    color: Color.fromRGBO(183, 28, 28, 0.8),
+                    child: Center(
+                      child: ListTile(
+                        trailing: Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                          size: 50,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-            childCount: _taskList.length,
+                );
+              },
+              childCount: _taskList.length,
+            ),
           ),
         ),
       ],
