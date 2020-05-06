@@ -285,7 +285,9 @@ class TaskListState extends State<TaskList> {
                     confirmDismiss: (DismissDirection direction) {
                       return _showDeleteConfirmation(context).then((delete) {
                         if (delete) {
-                          _taskList.removeAt(index);
+                          setState(() {
+                            _taskList.removeAt(index);
+                          });
 
                           SnackBar deleteSnackBar = SnackBar(
                             duration: Duration(seconds: 1),
@@ -323,7 +325,9 @@ class TaskListState extends State<TaskList> {
         onPressed: () {
           _showAddTaskDialog(context).then((task) {
             if (task != null) {
-              _taskList.insert(0, task);
+              setState(() {
+                _taskList.insert(0, task);
+              });
 
               SnackBar infoSnackBar = SnackBar(
                 duration: Duration(seconds: 1),
