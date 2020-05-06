@@ -10,23 +10,133 @@ class TaskList extends StatefulWidget {
 class TaskListState extends State<TaskList> {
   List<Task> _taskList = new List<Task>.generate(
       30,
-      (index) => new Task((index + 1), "Task ${(index + 1)}",
+      (index) => new Task(index, "Task ${(index + 1)}",
           "Description for task ${(index + 1)}", false));
 
-  Widget _taskStartIcon() {
-    return Icon(
-      Icons.play_arrow,
-      color: Colors.black,
-      size: 50,
+  Future<Task> _showAddTaskDialog(BuildContext context) {
+    final formKey = new GlobalKey<FormState>();
+    String _title = '', _description = '';
+
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(12.0),
+            ),
+          ),
+          title: Text("Add a new task"),
+          contentPadding: EdgeInsets.all(10),
+          children: <Widget>[
+            Form(
+              key: formKey,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    decoration: InputDecoration(hintText: "Title"),
+                    autofocus: true,
+                    onSaved: (value) => _title = value,
+                    validator: (value) =>
+                        value.length == 0 ? "A title must be supplied." : null,
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(hintText: "Description"),
+                    minLines: 3,
+                    maxLines: 5,
+                    onSaved: (value) => _description = value,
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(top: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        FlatButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(null);
+                          },
+                          child: Text("Cancel"),
+                        ),
+                        RaisedButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(12.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            if (formKey.currentState.validate()) {
+                              formKey.currentState.save();
+                              Navigator.of(context).pop(new Task(
+                                  _taskList.length + 1,
+                                  _title,
+                                  _description,
+                                  false));
+                            }
+                          },
+                          child: Text("Save"),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+      barrierDismissible: true,
     );
   }
 
-  Widget _taskStopIcon() {
-    return Icon(
-      Icons.stop,
-      color: Colors.black,
-      size: 50,
-    );
+  Future<bool> _showDeleteConfirmation(BuildContext context) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(12.0),
+              ),
+            ),
+            title: Text("Delete task"),
+            content: Text("Are you sure you wish to delete task?"),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: Text(
+                  "No",
+                  style: TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+              RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(12.0),
+                    ),
+                  ),
+                  color: Color.fromRGBO(183, 28, 28, 0.8),
+                  textColor: Colors.white,
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                  child: Text(
+                    "Yes",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ))
+            ],
+          );
+        });
+  }
+
+  Widget _taskIcon(IconData icon) {
+    return Icon(icon, color: Colors.black, size: 50);
   }
 
   Widget _actionContainer(Task task) {
@@ -34,15 +144,9 @@ class TaskListState extends State<TaskList> {
       child: Container(
         width: 100,
         height: 100,
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: Colors.grey,
-              width: 0.1,
-            ),
-          ),
-        ),
-        child: task.taskStarted ? _taskStopIcon() : _taskStartIcon(),
+        child: task.taskStarted
+            ? _taskIcon(Icons.stop)
+            : _taskIcon(Icons.play_arrow),
       ),
       onTap: () {
         setState(() {
@@ -62,14 +166,6 @@ class TaskListState extends State<TaskList> {
     return InkWell(
       child: Container(
         padding: EdgeInsets.only(left: 10),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: Colors.grey,
-              width: 0.1,
-            ),
-          ),
-        ),
         child: Column(
           children: <Widget>[
             Flexible(
@@ -125,6 +221,12 @@ class TaskListState extends State<TaskList> {
       decoration: BoxDecoration(
         color: Colors.white10,
         shape: BoxShape.rectangle,
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey,
+            width: 0.1,
+          ),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.max,
@@ -138,116 +240,104 @@ class TaskListState extends State<TaskList> {
     );
   }
 
-  Future<bool> _showDeleteConfirmation(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Delete task"),
-            content: Text("Are you sure you wish to delete task?"),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-                child: Text(
-                  "No",
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
-              ),
-              RaisedButton(
-                  color: Color.fromRGBO(183, 28, 28, 0.8),
-                  textColor: Colors.white,
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                  child: Text(
-                    "Yes",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ))
-            ],
-          );
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: <Widget>[
-        SliverAppBar(
-            expandedHeight: 250.0,
-            floating: false,
-            pinned: true,
-            snap: false,
-            flexibleSpace: const FlexibleSpaceBar(
-              title: Text('TODO: Add text here'),
-            ),
-            actions: <Widget>[
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    tooltip: 'Search',
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.person_outline),
-                    tooltip: 'Profile',
-                    onPressed: () {},
-                  ),
-                ],
-              )
-            ]),
-        Container(
-          child: SliverList(
-            delegate: new SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                return new Dismissible(
-                  direction: DismissDirection.endToStart,
-                  key: new ObjectKey(
-                    _taskList[index],
-                  ),
-                  child: _taskCard(_taskList[index]),
-                  confirmDismiss: (DismissDirection direction) {
-                    return _showDeleteConfirmation(context).then((delete) {
-                      if (delete) {
-                        _taskList.removeAt(index);
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+              expandedHeight: 250.0,
+              floating: false,
+              pinned: true,
+              snap: false,
+              flexibleSpace: const FlexibleSpaceBar(
+                title: Text('TODO: Add text here'),
+              ),
+              actions: <Widget>[
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.search),
+                      tooltip: 'Search',
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.person_outline),
+                      tooltip: 'Profile',
+                      onPressed: () {},
+                    ),
+                  ],
+                )
+              ]),
+          Container(
+            child: SliverList(
+              key: new ObjectKey(_taskList),
+              delegate: new SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  return new Dismissible(
+                    direction: DismissDirection.endToStart,
+                    key: new ObjectKey(
+                      _taskList[index],
+                    ),
+                    child: _taskCard(_taskList[index]),
+                    confirmDismiss: (DismissDirection direction) {
+                      return _showDeleteConfirmation(context).then((delete) {
+                        if (delete) {
+                          setState(() {
+                            _taskList.removeAt(index);
+                          });
 
-                        SnackBar deleteSnackBar = SnackBar(
-                          content: Text("Task successfully removed."),
-                        );
-                        Scaffold.of(context).showSnackBar(deleteSnackBar);
-                      }
-                      return delete;
-                    });
-                  },
-                  background: new Container(),
-                  secondaryBackground: new Container(
-                    height: 100,
-                    color: Color.fromRGBO(183, 28, 28, 0.8),
-                    child: Center(
-                      child: ListTile(
-                        trailing: Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                          size: 50,
+                          SnackBar deleteSnackBar = SnackBar(
+                            duration: Duration(seconds: 1),
+                            content: Text("Task successfully removed."),
+                          );
+                          Scaffold.of(context).showSnackBar(deleteSnackBar);
+                        }
+                        return delete;
+                      });
+                    },
+                    background: new Container(),
+                    secondaryBackground: new Container(
+                      height: 100,
+                      color: Color.fromRGBO(183, 28, 28, 0.8),
+                      child: Center(
+                        child: ListTile(
+                          trailing: Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                            size: 50,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-              childCount: _taskList.length,
+                  );
+                },
+                childCount: _taskList.length,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          _showAddTaskDialog(context).then((task) {
+            if (task != null) {
+              setState(() {
+                _taskList.insert(0, task);
+              });
+
+              SnackBar infoSnackBar = SnackBar(
+                duration: Duration(seconds: 1),
+                content: Text("New task added."),
+              );
+              Scaffold.of(context).showSnackBar(infoSnackBar);
+            }
+          });
+        },
+      ),
     );
   }
 }
