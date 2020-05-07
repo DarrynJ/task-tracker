@@ -14,8 +14,8 @@ class TaskListState extends State<TaskList> {
           "Description for task ${(index + 1)}", false));
 
   Future<Task> _showAddTaskDialog(BuildContext context) {
-    final formKey = new GlobalKey<FormState>();
-    String _title = '', _description = '';
+    final addTaskFormKey = new GlobalKey<FormState>();
+    String _name = '', _description = '';
 
     return showDialog(
       context: context,
@@ -30,13 +30,13 @@ class TaskListState extends State<TaskList> {
           contentPadding: EdgeInsets.all(10),
           children: <Widget>[
             Form(
-              key: formKey,
+              key: addTaskFormKey,
               child: Column(
                 children: <Widget>[
                   TextFormField(
-                    decoration: InputDecoration(hintText: "Title"),
+                    decoration: InputDecoration(hintText: "Name"),
                     autofocus: true,
-                    onSaved: (value) => _title = value,
+                    onSaved: (value) => _name = value,
                     validator: (value) =>
                         value.length == 0 ? "A title must be supplied." : null,
                   ),
@@ -64,11 +64,11 @@ class TaskListState extends State<TaskList> {
                             ),
                           ),
                           onPressed: () {
-                            if (formKey.currentState.validate()) {
-                              formKey.currentState.save();
+                            if (addTaskFormKey.currentState.validate()) {
+                              addTaskFormKey.currentState.save();
                               Navigator.of(context).pop(new Task(
                                   _taskList.length + 1,
-                                  _title,
+                                  _name,
                                   _description,
                                   false));
                             }

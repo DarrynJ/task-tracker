@@ -17,13 +17,14 @@ class _TaskViewState extends State<TaskView> {
 
   @override
   Widget build(BuildContext context) {
-    String _title = "";
+    final updateTaskFormKey = new GlobalKey<FormState>();
+    String _name = "";
     String _description = "";
 
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          color: Color.fromRGBO(110, 111, 190, 1),
+          color: Colors.blue,
         ),
         child: Column(
           children: <Widget>[
@@ -84,6 +85,7 @@ class _TaskViewState extends State<TaskView> {
                 ),
                 child: SafeArea(
                   child: Form(
+                    key: updateTaskFormKey,
                     child: Container(
                       padding: EdgeInsets.only(
                         left: 20,
@@ -92,9 +94,9 @@ class _TaskViewState extends State<TaskView> {
                       child: Column(
                         children: <Widget>[
                           TextFormField(
-                            decoration: InputDecoration(hintText: "Title"),
-                            autofocus: true,
-                            onSaved: (value) => _title = value,
+                            decoration: InputDecoration(hintText: "Name"),
+                            initialValue: task.name,
+                            onSaved: (value) => _name = value,
                             validator: (value) => value.length == 0
                                 ? "A title must be supplied."
                                 : null,
@@ -104,7 +106,44 @@ class _TaskViewState extends State<TaskView> {
                                 InputDecoration(hintText: "Description"),
                             minLines: 3,
                             maxLines: 5,
+                            initialValue: task.description,
                             onSaved: (value) => _description = value,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                FlatButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _name = task.name;
+                                      _description = task.description;
+                                    });
+                                  },
+                                  child: Text("Cancel"),
+                                ),
+                                RaisedButton(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(12.0),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    if (updateTaskFormKey.currentState
+                                        .validate()) {
+                                      updateTaskFormKey.currentState.save();
+
+                                      setState(() {
+                                        task.name = _name;
+                                        task.description = _description;
+                                      });
+                                    }
+                                  },
+                                  child: Text("Update"),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
