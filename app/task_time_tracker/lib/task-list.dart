@@ -174,11 +174,14 @@ class TaskListState extends State<TaskList> {
               child: Container(
                 child: Row(
                   children: <Widget>[
-                    Text(
-                      task.name,
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w400,
+                    Flexible(
+                      child: Text(
+                        task.name,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
                   ],
@@ -190,11 +193,14 @@ class TaskListState extends State<TaskList> {
               child: Container(
                 child: Row(
                   children: <Widget>[
-                    Text(
-                      task.description,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w200,
+                    Flexible(
+                      child: Text(
+                        task.description,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w200,
+                        ),
                       ),
                     ),
                   ],
