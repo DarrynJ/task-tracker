@@ -23,21 +23,15 @@ class TaskListState extends State<TaskList> {
   }
 
   void _startTaskTimer(Task task) {
-    print('Task started.');
-
     _timer = Timer.periodic(delay, (Timer t) {
       setState(() {
         task.seconds += 1;
       });
-
-      print('${task.name}: ${task.seconds.toString()}s');
     });
   }
 
   void _stopTaskTimer(Task task) {
     _timer.cancel();
-
-    print('${task.name} stopped: ${task.seconds.toString()}s');
   }
 
   List<Task> _taskList = new List<Task>.generate(
