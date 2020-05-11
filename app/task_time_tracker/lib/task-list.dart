@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import './models/task.dart';
 import './pages/task-view.dart';
@@ -8,6 +10,30 @@ class TaskList extends StatefulWidget {
 }
 
 class TaskListState extends State<TaskList> {
+  Timer _timer;
+
+  Stopwatch _stopwatch = new Stopwatch();
+  static const delay = Duration(seconds: 1);
+
+  @override
+  void dispose() {
+    _stopwatch.stop();
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _startTaskTimer(Task task) {
+    _timer = Timer.periodic(delay, (Timer t) {
+      setState(() {
+        task.seconds += 1;
+      });
+    });
+  }
+
+  void _stopTaskTimer(Task task) {
+    _timer.cancel();
+  }
+
   List<Task> _taskList = new List<Task>.generate(
       30,
       (index) => new Task(index, "Task ${(index + 1)}",
@@ -157,6 +183,12 @@ class TaskListState extends State<TaskList> {
           });
 
           task.taskStarted = !task.taskStarted;
+
+          if (task.taskStarted) {
+            _startTaskTimer(task);
+          } else {
+            _stopTaskTimer(task);
+          }
         });
       },
     );
@@ -241,6 +273,12 @@ class TaskListState extends State<TaskList> {
           Expanded(
             child: _descriptionContainer(task),
           ),
+          Container(
+            padding: EdgeInsets.all(5),
+            child: Text(
+              task.toCapturedDisplayTime(),
+            ),
+          ),
         ],
       ),
     );
@@ -292,6 +330,9 @@ class TaskListState extends State<TaskList> {
                       return _showDeleteConfirmation(context).then((delete) {
                         if (delete) {
                           setState(() {
+                            if (_taskList[index].taskStarted) {
+                              _taskList[index].taskStarted = false;
+                            }
                             _taskList.removeAt(index);
                           });
 

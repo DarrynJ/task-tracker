@@ -111,6 +111,13 @@ class _TaskViewState extends State<TaskView> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 20),
+                            child: Center(
+                              child: Text(
+                                  "${task.format(task.getDuration())} caputured today"),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
