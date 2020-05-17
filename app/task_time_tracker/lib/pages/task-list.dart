@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import './models/task.dart';
-import './pages/task-view.dart';
+import '../models/task.dart';
+import '../pages/task-view.dart';
 
 class TaskList extends StatefulWidget {
   @override
@@ -25,7 +25,7 @@ class TaskListState extends State<TaskList> {
   void _startTaskTimer(Task task) {
     _timer = Timer.periodic(delay, (Timer t) {
       setState(() {
-        task.seconds += 1;
+        // TODO: start the task
       });
     });
   }
@@ -34,14 +34,10 @@ class TaskListState extends State<TaskList> {
     _timer.cancel();
   }
 
-  List<Task> _taskList = new List<Task>.generate(
-      30,
-      (index) => new Task(index, "Task ${(index + 1)}",
-          "Description for task ${(index + 1)}", false));
-
   Future<Task> _showAddTaskDialog(BuildContext context) {
     final addTaskFormKey = new GlobalKey<FormState>();
-    String _name = '', _description = '';
+
+    String _name = "", _description = "";
 
     return showDialog(
       context: context,
@@ -92,11 +88,8 @@ class TaskListState extends State<TaskList> {
                           onPressed: () {
                             if (addTaskFormKey.currentState.validate()) {
                               addTaskFormKey.currentState.save();
-                              Navigator.of(context).pop(new Task(
-                                  _taskList.length + 1,
-                                  _name,
-                                  _description,
-                                  false));
+                              Navigator.of(context)
+                                  .pop(); // TODO: add task here.
                             }
                           },
                           child: Text("Save"),
@@ -170,25 +163,13 @@ class TaskListState extends State<TaskList> {
       child: Container(
         width: 100,
         height: 100,
-        child: task.taskStarted
+        child: false // TODO: add check on task entry
             ? _taskIcon(Icons.stop)
             : _taskIcon(Icons.play_arrow),
       ),
       onTap: () {
         setState(() {
-          _taskList.forEach((e) {
-            if (e.id != task.id) {
-              e.taskStarted = false;
-            }
-          });
-
-          task.taskStarted = !task.taskStarted;
-
-          if (task.taskStarted) {
-            _startTaskTimer(task);
-          } else {
-            _stopTaskTimer(task);
-          }
+          // TODO: Stop all tasks, save their captured time and start the next task
         });
       },
     );
@@ -276,7 +257,7 @@ class TaskListState extends State<TaskList> {
           Container(
             padding: EdgeInsets.all(5),
             child: Text(
-              task.toCapturedDisplayTime(),
+              "", // TODO: a task friendly display date.
             ),
           ),
         ],
@@ -317,23 +298,20 @@ class TaskListState extends State<TaskList> {
               ]),
           Container(
             child: SliverList(
-              key: new ObjectKey(_taskList),
+              key: new ObjectKey(null), // TODO: should be the tasks
               delegate: new SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
                   return new Dismissible(
                     direction: DismissDirection.endToStart,
                     key: new ObjectKey(
-                      _taskList[index],
+                      null, // TODO: should be the task at the index
                     ),
-                    child: _taskCard(_taskList[index]),
+                    child: _taskCard(null), // TODO: should be the task at the index
                     confirmDismiss: (DismissDirection direction) {
                       return _showDeleteConfirmation(context).then((delete) {
                         if (delete) {
                           setState(() {
-                            if (_taskList[index].taskStarted) {
-                              _taskList[index].taskStarted = false;
-                            }
-                            _taskList.removeAt(index);
+                            // TODO: stop the task time and remove the task at the current index
                           });
 
                           SnackBar deleteSnackBar = SnackBar(
@@ -361,7 +339,7 @@ class TaskListState extends State<TaskList> {
                     ),
                   );
                 },
-                childCount: _taskList.length,
+                childCount: 0, // TODO: should be the tasks length
               ),
             ),
           ),
@@ -373,7 +351,7 @@ class TaskListState extends State<TaskList> {
           _showAddTaskDialog(context).then((task) {
             if (task != null) {
               setState(() {
-                _taskList.insert(0, task);
+                // TODO: add the new task to the list
               });
 
               SnackBar infoSnackBar = SnackBar(

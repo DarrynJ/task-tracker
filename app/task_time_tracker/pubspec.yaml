@@ -19,6 +19,8 @@ environment:
 dependencies:
   cloud_firestore: 
 
+  adobe_xd: ^0.1.0
+
   flutter:
     sdk: flutter
 

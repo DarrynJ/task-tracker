@@ -113,7 +113,8 @@ class _TaskViewState extends State<TaskView> {
                             padding: const EdgeInsets.only(top: 20),
                             child: Center(
                               child: Text(
-                                  "${task.format(task.getDuration())} caputured today"),
+                                "", // TOOD: add a friendly display of time captured today
+                              ),
                             ),
                           ),
                           Padding(
