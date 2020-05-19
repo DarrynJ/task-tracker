@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './task-list.dart';
+import './pages/task-list.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,6 +8,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Home(),
+      theme: ThemeData(
+        backgroundColor: const Color(0xff2c2c2c),
+        scaffoldBackgroundColor: const Color(0xff2c2c2c),
+      ),
       routes: {
         '/Home': (context) => Home(),
       },
