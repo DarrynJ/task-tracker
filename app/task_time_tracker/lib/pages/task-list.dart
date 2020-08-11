@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:task_time_tracker/components/task-card.dart';
+import 'package:task_time_tracker/services/taskService.dart';
 import '../models/task.dart';
 
 class TaskList extends StatefulWidget {
@@ -10,9 +11,12 @@ class TaskList extends StatefulWidget {
 
 class TaskListState extends State<TaskList> {
   Timer _timer;
+  List<Task> _tasks;
 
   Stopwatch _stopwatch = new Stopwatch();
   static const delay = Duration(seconds: 1);
+
+  TaskService _service = new TaskService();
 
   @override
   void dispose() {
@@ -155,6 +159,8 @@ class TaskListState extends State<TaskList> {
 
   @override
   Widget build(BuildContext context) {
+    _service.getTasks().then((value) => _tasks = value);
+
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
@@ -186,15 +192,16 @@ class TaskListState extends State<TaskList> {
               ]),
           Container(
             child: SliverList(
-              key: new ObjectKey(null), // TODO: should be the tasks
+              key: new ObjectKey(_tasks), // TODO: should be the tasks
               delegate: new SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
                   return new Dismissible(
                     direction: DismissDirection.endToStart,
                     key: new ObjectKey(
-                      null, // TODO: should be the task at the index
+                      _tasks[index], // TODO: should be the task at the index
                     ),
-                    child: TaskCard(null), // TODO: should be the task at the index
+                    child: TaskCard(
+                        _tasks[index]), // TODO: should be the task at the index
                     confirmDismiss: (DismissDirection direction) {
                       return _showDeleteConfirmation(context).then((delete) {
                         if (delete) {
@@ -227,7 +234,7 @@ class TaskListState extends State<TaskList> {
                     ),
                   );
                 },
-                childCount: 0, // TODO: should be the tasks length
+                childCount: 1, 
               ),
             ),
           ),

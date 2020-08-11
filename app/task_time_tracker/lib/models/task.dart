@@ -2,6 +2,8 @@ class Task {
   int id;
   String name;
   String description;
+
+  Task(this.id, this.name, this.description);
 }
 
 class TaskEntry {
